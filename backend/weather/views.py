@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import WeatherApiMainSerializer
@@ -16,7 +17,15 @@ class WeatherApiView(APIView):
                 'error': 'Please enter the city name'
             },
             status=400)
-        url = weather_api_url + f'{city}/'
+        
+        city_lower = city.strip().lower()
+        cache_key = f'city_{city_lower}'
+        cached_data = cache.get(cache_key)
+        
+        if cached_data :
+            return Response(data=cached_data)
+        
+        url = weather_api_url + f'{city_lower}/'
         params = {
             'key' : weather_api_token,
             'unitGroup': 'metric',
@@ -26,6 +35,7 @@ class WeatherApiView(APIView):
             data = res.json()
             serializer= WeatherApiMainSerializer(data=data)
             if serializer.is_valid():
+                cache.set(cache_key,data, 30)
                 return Response(data=serializer.validated_data)
         serializer = WeatherApiMainSerializer()
         return Response(serializer.errors)
