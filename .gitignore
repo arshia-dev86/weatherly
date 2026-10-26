@@ -1,2 +1,13 @@
-__pycache__/
+venv/
 .venv/
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+.env.*
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+.DS_Store

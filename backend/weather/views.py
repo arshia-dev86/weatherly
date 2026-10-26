@@ -4,10 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import WeatherApiMainSerializer
 import requests
+from django.conf import settings
 # Create your views here.
 
 weather_api_url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'
-weather_api_token = 'HF3N22WDDTG7YU5N5ECGS4WHH'
+weather_api_key = settings.WEATHER_API_KEY
 
 class WeatherApiView(APIView):
     def get(self,request):
@@ -27,7 +28,7 @@ class WeatherApiView(APIView):
         
         url = weather_api_url + f'{city_lower}/'
         params = {
-            'key' : weather_api_token,
+            'key' : weather_api_key,
             'unitGroup': 'metric',
         }
         res = requests.get(url=url, params=params,timeout=10)
